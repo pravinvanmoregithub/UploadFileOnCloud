@@ -5,9 +5,9 @@
 2) Resize Image with provided width and height in php
 
 1) 
-|_ Created API for posting third party URL, Width and Height.
-|_ API Requires URL, Request Body and headers
-|_ Request Body:
+=> Created API for posting third party URL, Width and Height.
+=> API Requires URL, Request Body and headers
+=> Request Body:
 
 {
 
@@ -19,11 +19,11 @@
 
 }
 
-|_ Request URL:
+=> Request URL:
 
 http://localhost/onlinetest/api/uploadfile
 
-|_ Request headers:
+=> Request headers:
 
 Content-Type:application/json
 Authorization:UFJBVklOOlZBTk1PUkU=
