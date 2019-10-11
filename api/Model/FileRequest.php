@@ -8,8 +8,9 @@ use Aws\S3\Exception\S3Exception;
 
 require 'aws-autoloader.php';
 
+include("resize-class.php");
 
-function saveImageOnAws($FileUrl){
+function saveImageOnAws($FileUrl,$FileWidth,$FileHeight){
 
     $resP = array();
 
@@ -24,6 +25,17 @@ function saveImageOnAws($FileUrl){
     $fileContents = file_get_contents($FileUrl);
 
 	$tempFile = file_put_contents($tempFilePath, $fileContents);
+
+    // *** 1) Initialise / load image
+    $resizeObj = new resize($tempFilePath);
+
+    // *** 2) Resize image (options: exact, portrait, landscape, auto, crop)
+    $resizeObj -> resizeImage($FileWidth,$FileHeight, 'crop');
+
+    $ResizefileTempName = '/tmp/' .basename($FileUrl). '-resizeda.jpg';
+
+    // *** 3) Save image
+    $resizeObj -> saveImage($ResizefileTempName, 1000);
 
     $bucket = 'khelfit';
 
@@ -49,7 +61,7 @@ function saveImageOnAws($FileUrl){
         $result = $s3->putObject(array(
             'Bucket' => $bucket,
             'Key'    => $keyname,
-            'SourceFile'   => $tempFilePath,
+            'SourceFile'   => $ResizefileTempName,
             'ACL'    => 'public-read'
         ));
 
@@ -106,7 +118,7 @@ function UploadFile($con,$data){
         return $exception;
     }
 
-    $ImageRespAws = saveImageOnAws($dataDec['FileUrl']);
+    $ImageRespAws = saveImageOnAws($dataDec['FileUrl'],$FileWidth,$FileHeight);
 
     $FileDestination = 'http://khelfit.s3.amazonaws.com/upload/'.$ImageRespAws['filename'];
 
